@@ -59,6 +59,7 @@ public class Character
         Equipment = equipment ?? Array.Empty<string>();
     }
 
+
     /// <summary>
     /// Returns a formatted string representation of the character.
     /// Useful for debugging and display.

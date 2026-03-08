@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using W03.Models;
 
 namespace W03.Services;
@@ -17,12 +22,15 @@ namespace W03.Services;
 /// </summary>
 public class CharacterReader
 {
+
     private readonly string _filePath;
 
     /// <summary>
     /// Creates a new CharacterReader for the specified file.
     /// </summary>
     /// <param name="filePath">Path to the CSV file containing character data</param>
+    /// 
+
     public CharacterReader(string filePath)
     {
         _filePath = filePath;
@@ -31,7 +39,7 @@ public class CharacterReader
     /// <summary>
     /// Reads all characters from the CSV file.
     ///
-    /// TODO: Implement this method to:
+    /// Done: Implement this method to:
     /// 1. Read all lines from the file
     /// 2. Parse each line into a Character object
     /// 3. Return the list of characters
@@ -44,15 +52,27 @@ public class CharacterReader
     {
         var characters = new List<Character>();
 
-        // TODO: Read all lines from file
-        // string[] lines = File.ReadAllLines(_filePath);
+        // Done: Read all lines from file
+         string[] lines = File.ReadAllLines(_filePath);
 
-        // TODO: Skip header if present, then parse each line
-        // foreach (string line in lines)
-        // {
-        //     Character character = ParseLine(line);
-        //     characters.Add(character);
-        // }
+        // Done: Skip header if present, then parse each line
+         foreach (string line in lines)
+         {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue; // Skip empty lines
+            }
+            var trimmedLine = line.Trim();
+            //skips header row if present
+            if (trimmedLine.StartsWith("Name,", StringComparison.OrdinalIgnoreCase))
+                continue;
+           
+            var character = ParseLine(line);
+            if (character != null)
+            {
+                characters.Add(character);
+            }
+        }
 
         return characters;
     }
@@ -74,14 +94,17 @@ public class CharacterReader
     /// <returns>The matching character, or null if not found</returns>
     public Character FindByName(List<Character> characters, string name)
     {
-        // TODO: Use LINQ to find the character
-        // Example: return characters.FirstOrDefault(c => c.Name == name);
+        // Done: Use LINQ to find the character
+        //return characters.FirstOrDefault(c => c.Name == name);
+  
 
         // For case-insensitive search, you could use:
-        // return characters.FirstOrDefault(c =>
-        //     c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        //return characters.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return characters.FirstOrDefault(c => c.Name.Equals(name,StringComparison.OrdinalIgnoreCase))
+            ?? characters.FirstOrDefault (c => c.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
 
-        return null; // Replace with LINQ query
+
+        //return result; // Replace with LINQ query
     }
 
     /// <summary>
@@ -97,10 +120,10 @@ public class CharacterReader
     /// <returns>All characters of the specified profession</returns>
     public List<Character> FindByProfession(List<Character> characters, string profession)
     {
-        // TODO: Use LINQ Where to filter characters
-        // return characters.Where(c => c.Profession == profession).ToList();
+        // Done: Use LINQ Where to filter characters
+         return characters.Where(c => c.Profession == profession).ToList();
 
-        return new List<Character>(); // Replace with LINQ query
+        //return new List<Character>(); // Replace with LINQ query
     }
 
     /// <summary>
@@ -111,11 +134,48 @@ public class CharacterReader
     /// </summary>
     private Character ParseLine(string line)
     {
-        // TODO: Parse the line and create a Character object
+        // Done: Parse the line and create a Character object
         // Remember to handle:
         // - Quoted names with commas: "John, Brave",Fighter,1,10,sword|shield
         // - Equipment split by | (pipe): sword|shield|potion
+        string name = "";
+        string profession = "";
+        string level = "";
+        string health = "";
+        string equipment = "";
 
-        return new Character();
+        //parse name
+        if (line.StartsWith("\"")){
+            int closingQuote = line.IndexOf("\"", 1);
+            name = line.Substring(1, closingQuote - 1);
+
+            var restOfLine = line.Substring(closingQuote + 2); // Skip comma after closing quote
+
+            var lines = restOfLine.Split(',');
+            profession = lines[0];
+            level = lines[1];
+            health = lines[2];
+            equipment = lines[3];
+        }
+        else
+        {
+            // No quotes, simple split
+            var lines = line.Split(',');
+            name = lines[0]; 
+            profession = lines[1];
+            level = lines[2];
+            health = lines[3];
+            equipment = lines[4];
+        }
+
+        //Build and return character object, splitting equipment on | into stirng array
+        return new Character
+        (
+            name,
+            profession,
+            int.Parse(level),
+            int.Parse(health),
+            equipment.Split('|')
+        );
     }
 }

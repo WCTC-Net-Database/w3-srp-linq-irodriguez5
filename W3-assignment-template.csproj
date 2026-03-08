@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.54.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Files\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

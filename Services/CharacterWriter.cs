@@ -1,3 +1,4 @@
+
 using W03.Models;
 
 namespace W03.Services;
@@ -44,12 +45,12 @@ public class CharacterWriter
     public void WriteAll(List<Character> characters)
     {
         // TODO: Convert characters to CSV lines and write to file
-        // var lines = new List<string>();
-        // foreach (var character in characters)
-        // {
-        //     lines.Add(FormatCharacter(character));
-        // }
-        // File.WriteAllLines(_filePath, lines);
+         var lines = new List<string>();
+         foreach (var character in characters)
+        {
+           lines.Add(FormatCharacter(character));
+         }
+         File.WriteAllLines(_filePath, lines);
     }
 
     /// <summary>
@@ -57,7 +58,7 @@ public class CharacterWriter
     ///
     /// Use this when adding a new character without rewriting everything.
     ///
-    /// TODO: Implement this method to:
+    /// Done: Implement this method to:
     /// 1. Format the character as a CSV line
     /// 2. Append to the file (not overwrite!)
     ///
@@ -66,9 +67,9 @@ public class CharacterWriter
     /// <param name="character">The character to add</param>
     public void AppendCharacter(Character character)
     {
-        // TODO: Format and append the character
-        // string line = FormatCharacter(character);
-        // File.AppendAllText(_filePath, line + Environment.NewLine);
+        // Done: Format and append the character
+         string line = FormatCharacter(character);
+         File.AppendAllText(_filePath, line + Environment.NewLine);
     }
 
     /// <summary>
@@ -80,15 +81,16 @@ public class CharacterWriter
     /// </summary>
     private string FormatCharacter(Character character)
     {
-        // TODO: Format the character as a CSV line
+        // Done: Format the character as a CSV line
         // Consider:
         // - Should the name be quoted? (if it contains a comma)
         // - Join equipment array with | separator
 
         // Example (without quote handling):
-        // string equipment = string.Join("|", character.Equipment);
-        // return $"{character.Name},{character.Profession},{character.Level},{character.HP},{equipment}";
+        string equipment = string.Join("|", character.Equipment);
+        string name = character.Name.Contains(",") ? $"\"{character.Name}\"" : character.Name;
+        return $"{name},{character.Profession},{character.Level},{character.HP},{equipment}";
 
-        return string.Empty;
+        //return string.Empty;
     }
 }
